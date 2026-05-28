@@ -6,7 +6,7 @@ public class GetPatientDto
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public int Age { get; set; }
-    public string Sex { get; set; }
+    public bool Sex { get; set; }
     
     public List<GetAdmissionDto> Admissions { get; set; }
     public List<GetBedAssignmentDto> BedAssignments { get; set; }
