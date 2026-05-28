@@ -72,8 +72,16 @@ public class DbService : IDbService
     public async Task<IEnumerable<GetPatientDto>> GetSearchedPatients(
         [FromQuery] string text)
     {
-        var res = await _context.Patients
-            .Where(p => p.FirstName.Contains(text) || p.LastName.Contains(text))
+        var query = _context.Patients.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            query = query.Where(e =>
+                EF.Functions.Like(e.FirstName, $"%{text}%") ||
+                EF.Functions.Like(e.LastName, $"%{text}%"));
+        }
+        
+        var res = await query
             .Select(e => new GetPatientDto()
             {
                 Pesel = e.Pesel,

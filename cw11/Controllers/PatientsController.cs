@@ -20,24 +20,22 @@ public class PatientsController : ControllerBase
     public async Task<IActionResult> GetAllPatients()
     {
         var patients = await _dbService.GetAllPatients();
-        
+
         return Ok(patients);
     }
 
     [HttpGet("search")]
     public async Task<IActionResult> GetSearchedPatients(string text)
     {
-        try
+
+        var patients = await _dbService.GetSearchedPatients(text);
+
+        if (!patients.Any())
         {
-            var patients = await _dbService.GetSearchedPatients(text);
-            
-            return Ok(patients);
-        }
-        catch (NotFoundException e)
-        {
-            return NotFound(e.Message);
+            return NotFound("Taki pacjent nie istnieje");
         }
         
+        return Ok(patients);
     }
 
     [HttpPost("{pesel}/bedassignments")]
@@ -47,7 +45,7 @@ public class PatientsController : ControllerBase
         {
            await _dbService.CreateBedAssignment(pesel, bedAssignment);
 
-            return Created(nameof(CreateBedAssignment), bedAssignment);
+           return Created(nameof(CreateBedAssignment), bedAssignment);
         } 
         catch (NotFoundException e)
         {
