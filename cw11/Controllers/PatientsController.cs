@@ -1,4 +1,5 @@
-﻿using cw11.Exceptions;
+﻿using cw11.DTOs;
+using cw11.Exceptions;
 using cw11.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +7,11 @@ namespace cw11.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PatientController : ControllerBase
+public class PatientsController : ControllerBase
 {
     private readonly IDbService _dbService;
 
-    public PatientController(IDbService dbService)
+    public PatientsController(IDbService dbService)
     {
         _dbService = dbService;
     }
@@ -37,5 +38,20 @@ public class PatientController : ControllerBase
             return NotFound(e.Message);
         }
         
+    }
+
+    [HttpPost("{pesel}/bedassignments")]
+    public async Task<IActionResult> CreateBedAssignment(string pesel, CreateBedAssignmentDto bedAssignment)
+    {
+        try
+        {
+           await _dbService.CreateBedAssignment(pesel, bedAssignment);
+
+            return Created(nameof(CreateBedAssignment), bedAssignment);
+        } 
+        catch (NotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }
